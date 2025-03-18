@@ -1,0 +1,180 @@
+﻿@page
+@model RsaModel
+@{
+    ViewData["Title"] = "RSA测试";
+}
+<div style="color: gray; font-size:xx-small; padding-bottom: 1em; ">说明：移除PEM密钥的备注信息不影响加密、解密（-----BEGIN ... KEY-----，-----END ... KEY-----）</div>
+<input id="createkey" type="button" value="生成新密钥(后端)" />
+<label for="keylen">密钥长度：</label>
+<input id="keylen" type="number" value="1024" style="width:4em;" />
+<span style="color: gray; font-size:xx-small; padding-bottom: 1em; ">有效值: 512, 1024, 2048, 3072, 4096。明文最大长度=密钥长度/8-11。</span>
+<div style="color: gray; font-size:xx-small; padding-top: 2px; ">
+    比如：512/8-11=53字节；1024/8-11=117字节；2048/8-11=245字节；3072/8-11=373字节；4096/8-11=501字节。明文超长会加解密失败。
+</div>
+<label for="pubkey">PEM 格式公约：</label>
+<br />
+<textarea id="pubkey" rows="3" cols="100">-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDE4sZTnJI2qenDX1gqWT1RLhRv
+Tt1fDAhL96/H0D04yTfbWHNx74O1Q9FP702+dFaEQtjwwKUiyb20vXYF0Uy60Tqj
+D9BSoV0n5OgjOzVhIpydyenJTyD6XdiaFKqwTWzVRLtdd7w1xgBdo+1p11cEWHIy
+51o8k1eGO4sl+sxBmwIDAQAB
+-----END PUBLIC KEY-----</textarea>
+<br />
+<label for="privkey">PEM 格式私钥：</label>
+<br />
+<textarea id="privkey" rows="11" cols="100">-----BEGIN PRIVATE KEY-----
+MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMTixlOckjap6cNf
+WCpZPVEuFG9O3V8MCEv3r8fQPTjJN9tYc3Hvg7VD0U/vTb50VoRC2PDApSLJvbS9
+dgXRTLrROqMP0FKhXSfk6CM7NWEinJ3J6clPIPpd2JoUqrBNbNVEu113vDXGAF2j
+7WnXVwRYcjLnWjyTV4Y7iyX6zEGbAgMBAAECgYB1bAJ4b1LMgz3FpaGBcEOfnOnX
+EKP6QcTY+dm+Q7WfnnJPwUro0r4sZ0v4bnJheiT3MJ8Nxvc17jfUCYLQKWmmnUuK
+g0ljujtt8ThZ8yLSCuZ00cONS1cSx9inX8ANwpxtvaNpXjChD4sxD9Hl0DaizIcq
+zigc8+0a0LTpJsec0QJBAO4vuM6gnEk1OlbY2r7x937pYZpPV6Ew8b9QoxMxrf5+
+Q105vVPUvPq425JoaMrPIA7cwPRCepwihp0JLm5idg8CQQDTnFGaU/A4ObCCAaOb
+jXSUR2qbxmlbBDtmOIkjnP79Zof82ccCL8JBAFKJmD/Yqu0BA4Xnfm+cJz1HZiUc
+Jae1AkEApgh2FvM2foGwLSH1Oe2JzNn6w4pTV3W6ztXzF0omM6ToaG/7XhiJs2xx
+AtntUpKXkkSn7Jz6wyP+GjFwQFo6WQJART8UHRJ2u491STXMGi0SByvPoSYud9BM
+t8isZ/EKKFYTDhUd4INMaAT4/XnK+tYENJ64hOaFE25ryR+N6UYROQJBAJ9e2eN6
+azAOJyb5TOSWliwbzf8uA8gfwNncnL5VzqqMP+vmp/b1av8tiuiFfw4lVo3/umls
+/I5IJhUnvln+3Ag=
+-----END PRIVATE KEY-----</textarea>
+<br />
+
+<label for="input">原字符串(加密前)：</label>
+<br />
+<textarea id="input" name="input" type="text" rows=1 cols=100>这是加密测试字符串，abcd EFGH 1234 !@@#$ %^&* _+-=</textarea>
+<br />
+
+<label for="encryptedoutput">加密后：</label>
+<br />
+<textarea id="encryptedoutput" name="encryptedoutput" type="text" rows=3 cols=100></textarea>
+<br />
+
+<label for="uncryptedoutput">解密后：</label>
+<br />
+<textarea id="uncryptedoutput" name="uncryptedoutput" type="text" rows=1 cols=100></textarea>
+<br />
+
+<input id="frontendTest" type="button" value="前端加密/前端解密" />
+<input id="backendTest1" type="button" value="前端加密/后端解密" />
+<input id="backendTest2" type="button" value="后端加密/后端解密" />
+
+@section Scripts {
+    <script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/jsencrypt/3.3.2/jsencrypt.min.js"></script>
+    <script type="text/javascript">
+        // Call this code when the page is done loading.
+        $(function () {
+            $('#createkey').on('click', function () {
+                var data = { size: $('#keylen').val() };
+                $.ajax({
+                    type: 'post',
+                    url: 'api/Secure/CreateBase64Key',
+                    contentType: 'application/json',
+                    dataType: 'JSON',
+                    data: JSON.stringify(data),
+                    success: function (res) {
+                        console.log(res);
+                        $('#pubkey').val(res.publicKey);
+                        $('#privkey').val(res.privateKey);
+                    }
+                })
+            });
+
+            $('#frontendTest').click(function () {
+                $('#encryptedoutput').val('');
+                $('#uncryptedoutput').val('');
+                // 使用公约加密
+                var encrypt = new JSEncrypt();
+                encrypt.setPublicKey($('#pubkey').val());
+                var encrypted = encrypt.encrypt($('#input').val());
+                console.log("前端加密: " + encrypted);
+                $('#encryptedoutput').val(encrypted);
+                // 使用私钥解密
+                var decrypt = new JSEncrypt();
+                decrypt.setPrivateKey($('#privkey').val());
+                var uncrypted = decrypt.decrypt(encrypted);
+                console.log("前端解密: " + uncrypted);
+                $('#uncryptedoutput').val(uncrypted);
+                // 原字符串 是否和 解密后字符串 相等
+                if (uncrypted == $('#input').val()) {
+                    //alert('加密、解密成功！');
+                    console.log('加密、解密成功！');
+                }
+                else {
+                    console.log('加密、解密失败');
+                    alert('加密、解密失败！');
+                }
+            });
+
+            $('#backendTest1').on('click', function () {
+                // 使用公约加密
+                var encrypt = new JSEncrypt();
+                encrypt.setPublicKey($('#pubkey').val());
+                var encrypted = encrypt.encrypt($('#input').val());
+                console.log("前端加密: " + encrypted);
+                $('#encryptedoutput').val(encrypted);
+
+                var data = { key: $('#privkey').val(), content: encrypted };
+                $.ajax({
+                    type: 'post',
+                    url: 'api/Secure/Decrypt',
+                    contentType: 'application/json',
+                    dataType: 'JSON',
+                    data: JSON.stringify(data),
+                    success: function (res) {
+                        //console.log(res);
+                        var uncrypted = res.value;
+                        console.log("后端解密: " + uncrypted);
+                        $('#uncryptedoutput').val(uncrypted);
+                    }
+                })
+            });
+
+            $('#backendTest2').on('click', function () {
+                // 调用加密接口
+                fetch('api/Secure/Encrypt', {  
+                    method: 'POST',  
+                    headers: { 'Content-Type': 'application/json' },  
+                    body: JSON.stringify({  
+                        key: $('#pubkey').val(),
+                        content: $('#input').val()
+                    })
+                })  
+                .then(response => {  
+                    if (!response.ok) {  
+                        throw new Error('加密接口响应失败');  
+                    }  
+                    return response.json();
+                })  
+                .then(encryptData => {  
+                    console.log('后端加密数据:', encryptData);
+                    $('#encryptedoutput').val(encryptData.value)
+
+                    // 调用解密接口
+                    return fetch('api/Secure/Decrypt', {  
+                        method: 'POST',  
+                        headers: { 'Content-Type': 'application/json' },  
+                        body: JSON.stringify({  
+                            key: $('#privkey').val(),  
+                            content: $('#encryptedoutput').val()
+                        })
+                    });
+                })  
+                .then(response => {  
+                    if (!response.ok) {  
+                        throw new Error('解密接口响应失败');  
+                    }  
+                    return response.json();
+                })  
+                .then(decryptData => {  
+                    console.log('后端解密数据:', decryptData);
+                    $('#uncryptedoutput').val(decryptData.value);
+                })  
+                .catch(error => {  
+                    console.error('There has been a problem with your fetch operations:', error);  
+                });
+                // END OF 调用加密接口
+            });
+        });
+    </script>
+}
