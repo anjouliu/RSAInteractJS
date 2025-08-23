@@ -1,17 +1,8 @@
-﻿using Org.BouncyCastle.Asn1.Pkcs;
-using Org.BouncyCastle.Asn1.X509;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Pkcs;
-using Org.BouncyCastle.Security;
-using Org.BouncyCastle.Utilities;
-using Org.BouncyCastle.X509;
-using RSAInteractJS.Dto;
-using System.ComponentModel.DataAnnotations;
+﻿using CommonLib.Dto;
 using System.Security.Cryptography;
 using System.Text;
-using System.Xml;
 
-namespace RSAInteractJS
+namespace CommonLib.RSAUtil
 {
     /// <summary>
     /// RSA 密钥生成及加解密
@@ -95,7 +86,7 @@ namespace RSAInteractJS
         public static string SignByXmlKey(string xmlPrivateKey, string content, string hashName = "SHA256")
         {
             byte[] contentBytes = Encoding.UTF8.GetBytes(content);
-            using RSA rsa = RSA.Create();
+            using System.Security.Cryptography.RSA rsa = System.Security.Cryptography.RSA.Create();
             rsa.FromXmlString(xmlPrivateKey);
             contentBytes = rsa.SignData(contentBytes, new HashAlgorithmName(hashName), RSASignaturePadding.Pkcs1);
             return Convert.ToBase64String(contentBytes);

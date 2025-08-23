@@ -1,4 +1,4 @@
-﻿namespace RSAInteractJS.Dto
+﻿namespace CommonLib.Dto
 {
     /// <summary>
     /// RSA密钥

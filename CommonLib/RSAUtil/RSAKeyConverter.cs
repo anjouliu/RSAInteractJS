@@ -1,16 +1,14 @@
 ﻿using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
-using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 using System.Security.Cryptography;
-using System.Text;
 using System.Xml;
 
-namespace RSAInteractJS
+namespace CommonLib.RSAUtil
 {
     /// <summary>
     /// RSA 密钥转换。XML、PEM格式密钥互转
@@ -104,11 +102,11 @@ namespace RSAInteractJS
             }
             if (base64PrivateKey.IndexOf(pemPrivateKeyPostfix1) > -1)
             {
-                base64PrivateKey = base64PrivateKey[..^(pemPrivateKeyPostfix1.Length)];
+                base64PrivateKey = base64PrivateKey[..^pemPrivateKeyPostfix1.Length];
             }
             else if (base64PrivateKey.IndexOf(pemPrivateKeyPostfix2) > -1)
             {
-                base64PrivateKey = base64PrivateKey[..^(pemPrivateKeyPostfix2.Length)];
+                base64PrivateKey = base64PrivateKey[..^pemPrivateKeyPostfix2.Length];
             }
 
             try
