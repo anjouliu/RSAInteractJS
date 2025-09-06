@@ -1,0 +1,33 @@
+version: '1.0'
+name: pipeline-20250906
+displayName: pipeline-20250906
+triggers:
+  trigger: manual
+  push:
+    branches:
+      prefix:
+        - maim
+stages:
+  - name: stage-4b677943
+    displayName: 构建
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: build@dotnet
+        name: build_dotnet
+        displayName: .NET Core 构建
+        dotnetVersion: '9.0'
+        commands:
+          - '# input your command here'
+          - dotnet restore
+          - dotnet publish -c Release -o out
+        artifacts:
+          - name: BUILD_ARTIFACT
+            path:
+              - ./out
+        caches:
+          - ~/.nuget/packages
+        notify: []
+        strategy:
+          retry: '0'
