@@ -1,6 +1,6 @@
 version: '1.0'
 name: pipeline-20250906
-displayName: pipeline-20250906
+displayName: pipeline-测试1
 triggers:
   trigger: manual
   push:
