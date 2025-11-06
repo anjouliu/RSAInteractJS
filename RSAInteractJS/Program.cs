@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
+ï»¿using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using System.Reflection;
 
 namespace RSAInteractJS
@@ -10,10 +10,10 @@ namespace RSAInteractJS
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddRazorPages(options => {
-                // ĞŞ¸ÄÆğÊ¼Ò³£¨Ä¬ÈÏÊÇIndex£©
-                // ·½·¨1(ÍÆ¼ö)£º°Ñ Index.cshtml ¸ÄÃû£»È»ºó AddPageRoute("/XXX", "")
+                // ä¿®æ”¹èµ·å§‹é¡µï¼ˆé»˜è®¤æ˜¯Indexï¼‰
+                // æ–¹æ³•1(æ¨è)ï¼šæŠŠ Index.cshtml æ”¹åï¼›ç„¶å AddPageRoute("/XXX", "")
                 options.Conventions.AddPageRoute("/Home", "");
-                // ·½·¨2£ºÊµÏÖ IPageRouteModelConvention ½Ó¿Ú
+                // æ–¹æ³•2ï¼šå®ç° IPageRouteModelConvention æ¥å£
                 //options.Conventions.Add(new DefaultPageRouteModelConvention("/RSA"));
             });
 
@@ -33,7 +33,7 @@ namespace RSAInteractJS
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            // ÉèÖÃ¾²Ì¬Ò³ÃæÎªÆğÊ¼Ò³
+            // è®¾ç½®é™æ€é¡µé¢ä¸ºèµ·å§‹é¡µ
             //DefaultFilesOptions defaultFilesOptions = new();
             //defaultFilesOptions.DefaultFileNames.Add("rsa.html");
             //app.UseDefaultFiles(defaultFilesOptions);
@@ -81,7 +81,7 @@ namespace RSAInteractJS
 
             if (!defaultPath.StartsWith('/'))
             {
-                throw new ArgumentException(nameof(defaultPath) + "±ØĞëÒÔ/¿ªÍ·");
+                throw new ArgumentException(nameof(defaultPath) + "å¿…é¡»ä»¥/å¼€å¤´");
             }
 
             _defaultPath = defaultPath;
